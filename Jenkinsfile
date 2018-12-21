@@ -22,11 +22,6 @@ pipeline {
             }
         }
     }
-    post {
-        failure {
-
-        }
-    }
 }
 
 def gradlew(String... args) {
