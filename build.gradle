@@ -16,6 +16,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
@@ -37,6 +38,8 @@ dependencies {
     testCompile('org.junit.jupiter:junit-jupiter-engine')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
+    testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.8'
+    testImplementation group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: '3.0.0'
 }
 
 docker {
@@ -54,4 +57,24 @@ test {
     useJUnitPlatform {
         includeEngines 'junit-jupiter'
     }
+}
+
+task testLoad(type: JavaExec) {
+    description = 'Test load the Spring Boot web service with Gatling'
+    group = 'verification'
+    classpath = sourceSets.test.runtimeClasspath
+    jvmArgs = [
+            // workaround for https://github.com/gatling/gatling/issues/2689
+            "-Dgatling.core.directory.binaries=${sourceSets.test.output.classesDir.toString()}",
+            "-Dlogback.configurationFile=${logbackGatlingConfig()}"
+    ]
+    main = 'io.gatling.app.Gatling'
+    args = [
+            '--simulation', 'com.estsoft.api.gatling.simulation.LoadTest',
+            '--results-folder', "${buildDir}/gatling-results",
+            '--binaries-folder', sourceSets.test.output.classesDir.toString() // ignored because of above bug
+    ]
+}
+def logbackGatlingConfig() {
+    return sourceSets.test.resources.find { it.name == 'logback-gatling.xml'};
 }
