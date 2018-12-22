@@ -17,6 +17,11 @@ pipeline {
                 }
             }
         }
+        stage('Docker Image') {
+            steps {
+                gradlew('dockerPush')
+            }
+        }
     }
 }
 

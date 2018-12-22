@@ -1,12 +1,17 @@
 buildscript {
 	ext {
 		springBootVersion = '2.1.1.RELEASE'
+		palantirPluginVersion = '0.20.1'
 	}
 	repositories {
 		mavenCentral()
+		maven {
+			url('https://plugins.gradle.org/m2/')
+		}
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:${palantirPluginVersion}")
 	}
 }
 
@@ -14,18 +19,27 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.palantir.docker'
 
 group = 'com.estsoft'
 version = '0.0.4-SNAPSHOT'
 sourceCompatibility = 1.8
 
+
 repositories {
 	mavenCentral()
 }
-
 
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter')
 	compileOnly('org.projectlombok:lombok')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+docker {
+	dependsOn build
+	name "koodikindral/api:api-latest"
+	files bootJar.archivePath
+	buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+	noCache true
 }
