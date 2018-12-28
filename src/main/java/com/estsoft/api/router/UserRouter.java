@@ -17,6 +17,7 @@ public class UserRouter {
                 .andRoute(RequestPredicates.GET("/users/{id}"), handler::getById)
                 .andRoute(RequestPredicates.DELETE("/users/{id}"), handler::deleteById)
                 .andRoute(RequestPredicates.POST("/users"), handler::create)
-                .andRoute(RequestPredicates.PUT("/users/{id}"), handler::updateById);
+                .andRoute(RequestPredicates.PUT("/users/{id}"), handler::updateById)
+                .andRoute(RequestPredicates.POST("/login"), handler::login);
     }
 }

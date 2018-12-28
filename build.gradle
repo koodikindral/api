@@ -2,6 +2,7 @@ buildscript {
     ext {
         springBootVersion = '2.1.1.RELEASE'
         palantirPluginVersion = '0.20.1'
+        jwtVersion = '0.10.5'
     }
     repositories {
         mavenCentral()
@@ -31,8 +32,12 @@ repositories {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('org.springframework.boot:spring-boot-devtools')
+    compile('io.jsonwebtoken:jjwt-api:' + jwtVersion)
+    runtime('io.jsonwebtoken:jjwt-impl:' + jwtVersion)
+    runtime('io.jsonwebtoken:jjwt-jackson:' + jwtVersion)
     compileOnly('org.projectlombok:lombok')
     testCompile('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.junit.jupiter:junit-jupiter-engine')

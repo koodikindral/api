@@ -1,5 +1,6 @@
 package com.estsoft.api.service;
 
+import com.estsoft.api.config.Config;
 import com.estsoft.api.dto.User;
 import com.estsoft.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class UserService {
     }
 
     public Flux<User> all() {
-        return this.userRepository.findAll();
+        return this.userRepository.findAll().subscribeOn(Config.APPLICATION_SCHEDULER);
     }
 
     public Mono<User> get(String id) {
@@ -25,13 +26,13 @@ public class UserService {
 
     public Mono<User> create(String email) {
         return this.userRepository
-                .save(new User(null, email));
+                .save(new User(null, email, null));
     }
 
     public Mono<User> update(String id, String email) {
         return this.userRepository
                 .findById(id)
-                .map(p -> new User(p.getId(), email))
+                .map(p -> new User(p.getId(), email, null))
                 .flatMap(this.userRepository::save);
     }
 

@@ -1,8 +1,11 @@
 package com.estsoft.api.handler;
 
-import com.estsoft.api.dto.User;
+import com.estsoft.api.config.Config;
+import com.estsoft.api.dto.*;
 import com.estsoft.api.service.UserService;
+import com.estsoft.api.util.JWTUtil;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -11,14 +14,20 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Arrays;
+
+import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
 @Component
 public class UserHandler {
 
     private UserService userService;
+    private final JWTUtil jwtUtil;
 
-    public UserHandler(UserService userService) {
+    @Autowired
+    public UserHandler(UserService userService, JWTUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     public Mono<ServerResponse> getById(ServerRequest r) {
@@ -26,7 +35,7 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> all(ServerRequest r) {
-        return defaultReadResponse(this.userService.all());
+        return defaultReadResponse(this.userService.all()).subscribeOn(Config.APPLICATION_SCHEDULER);
     }
 
     public Mono<ServerResponse> updateById(ServerRequest r) {
@@ -44,6 +53,18 @@ public class UserHandler {
 
     public Mono<ServerResponse> deleteById(ServerRequest r) {
         return defaultReadResponse(this.userService.delete(id(r)));
+    }
+
+    public Mono<ServerResponse> login(ServerRequest request) {
+        Flux<AuthRequest> authRequestFlux = request
+                .bodyToFlux(AuthRequest.class);
+
+        final CustomUserDetails userDetails = new CustomUserDetails("gert", "cBrlgyL2GI2GINuLUUwgojITuIufFycpLG4490dhGtY=", true, Arrays.asList(Role.ROLE_USER));
+
+        return ServerResponse
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(fromObject(new AuthResponse(jwtUtil.generateToken(userDetails))));
     }
 
     private static Mono<ServerResponse> defaultReadResponse(Publisher<User> user) {
