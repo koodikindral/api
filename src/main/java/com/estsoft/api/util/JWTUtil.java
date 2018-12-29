@@ -1,6 +1,6 @@
 package com.estsoft.api.util;
 
-import com.estsoft.api.dto.CustomUserDetails;
+import com.estsoft.api.dto.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -41,10 +41,10 @@ public class JWTUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    public String generateToken(CustomUserDetails user) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRoles());
-        return doGenerateToken(claims, user.getUsername());
+        return doGenerateToken(claims, user.getEmail());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String username) {

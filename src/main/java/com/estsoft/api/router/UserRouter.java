@@ -12,12 +12,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class UserRouter {
     @Bean
-    public RouterFunction<ServerResponse> routes(UserHandler handler) {
+    public RouterFunction<ServerResponse> userRoutes(UserHandler handler) {
         return route(RequestPredicates.GET("/users"), handler::all)
                 .andRoute(RequestPredicates.GET("/users/{id}"), handler::getById)
                 .andRoute(RequestPredicates.DELETE("/users/{id}"), handler::deleteById)
                 .andRoute(RequestPredicates.POST("/users"), handler::create)
-                .andRoute(RequestPredicates.PUT("/users/{id}"), handler::updateById)
-                .andRoute(RequestPredicates.POST("/login"), handler::login);
+                .andRoute(RequestPredicates.PUT("/users/{id}"), handler::updateById);
     }
 }
