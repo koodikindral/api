@@ -22,18 +22,19 @@ pipeline {
                 gradlew('dockerPush')
             }
         }
-    }
 
-    stage('Deploy') {
-        steps {
-            script {
-                kubernetesDeploy(kubeconfigId: 'estcluster',
-                    configs: '.kubernetes/deployment.yaml',
-                    secretName: 'api',
-                    dockerCredentials: [
-                        [credentialsId: 'f2e16677-d6f8-41b4-a6ba-2c798bdc37c8']
-                    ]
-                )
+
+        stage('Deploy') {
+            steps {
+                script {
+                    kubernetesDeploy(kubeconfigId: 'estcluster',
+                        configs: '.kubernetes/deployment.yaml',
+                        secretName: 'api',
+                        dockerCredentials: [
+                            [credentialsId: 'f2e16677-d6f8-41b4-a6ba-2c798bdc37c8']
+                        ]
+                    )
+                }
             }
         }
     }
