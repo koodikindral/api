@@ -24,8 +24,8 @@ pipeline {
         }
     }
 
-     stage('Deploy') {
-          steps {
+    stage('Deploy') {
+        steps {
             script {
                 kubernetesDeploy(kubeconfigId: 'estcluster',
                     configs: '.kubernetes/deployment.yaml',
@@ -35,9 +35,8 @@ pipeline {
                     ]
                 )
             }
-          }
         }
-      }
+    }
 }
 
 def gradlew(String... args) {
